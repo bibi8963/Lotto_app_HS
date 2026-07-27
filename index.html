@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LOTTO AI LAB V5.2</title>
+    <title>LOTTO AI LAB V6.0</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: #f4f6f9; color: #333; padding: 20px 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
@@ -12,9 +12,9 @@
         .header h1 { font-size: 22px; color: #111; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .header p { font-size: 13px; color: #666; margin-top: 4px; }
         
-        .badge { background: #fef3c7; color: #d97706; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px; display: inline-block; margin-bottom: 8px; }
+        .badge { background: #dbeafe; color: #1e40af; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 12px; display: inline-block; margin-bottom: 8px; }
         
-        .btn-generate { width: 100%; background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: white; border: none; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3); transition: transform 0.1s, opacity 0.2s; }
+        .btn-generate { width: 100%; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); transition: transform 0.1s, opacity 0.2s; }
         .btn-generate:active { transform: scale(0.98); opacity: 0.9; }
         
         .status { margin-top: 15px; font-size: 12px; color: #64748b; text-align: center; min-height: 18px; line-height: 1.4; }
@@ -24,9 +24,9 @@
         .game-info { display: flex; flex-direction: column; gap: 4px; }
         .game-title { font-size: 13px; font-weight: 700; color: #334155; }
         .type-tag { font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; display: inline-block; }
-        .tag-disp { color: #2563eb; background: #dbeafe; }
-        .tag-mid { color: #d97706; background: #fef3c7; }
-        .tag-clump { color: #dc2626; background: #fee2e2; }
+        .tag-hot { color: #dc2626; background: #fee2e2; }
+        .tag-balance { color: #2563eb; background: #dbeafe; }
+        .tag-cold { color: #059669; background: #d1fae5; }
         
         .balls { display: flex; gap: 5px; }
         .ball { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); box-shadow: inset -2px -2px 4px rgba(0,0,0,0.15); }
@@ -43,24 +43,24 @@
 
 <div class="container">
     <div class="header">
-        <span class="badge">V5.2 Weighted Probability Engine</span>
+        <span class="badge">V6.0 Recent Trend Engine</span>
         <h1>🤖 LOTTO AI LAB</h1>
-        <p>최근 100회 가중치(80%) + 전체 통계(20%) 연동 엔진</p>
+        <p>최근 10회 극강 가중치(60%) + 트렌드 맞춤 엔진</p>
     </div>
 
-    <button class="btn-generate" onclick="runLottoAI()">🎯 가중치 반영 5조합 추출</button>
-    <div class="status" id="statusText">버튼을 누르면 실시간 가중치 기반 조합 추출이 시작됩니다.</div>
+    <button class="btn-generate" onclick="runLottoAI()">🎯 트렌드 가중치 5조합 추출</button>
+    <div class="status" id="statusText">버튼을 누르면 최근 10회 트렌드 기반 추출이 시작됩니다.</div>
 
     <div class="results" id="resultsContainer"></div>
 
     <div class="footer">
-        엑셀 당첨 데이터 기반 최근 100회 가중치(80%)와 전체 데이터(20%)를 실시간으로 적용하여 5개 조합을 추천합니다.
+        최근 10회차(1225~1234회) 당첨 빈도에 60% 가중치를 부여하고, 최근 자주 등장한 번호(핫)와 균형(밸런스)을 반영하여 도출합니다.
     </div>
 </div>
 
 <script>
-    // 엑셀 분석 결과 반영: 1~45번 가중치 배열 (최근 100회 80% + 전체 20%)
-    const WEIGHTS = [0.1234, 0.1131, 0.1719, 0.1223, 0.1048, 0.1388, 0.1554, 0.1456, 0.1581, 0.1061, 0.1148, 0.149, 0.157, 0.0919, 0.1713, 0.1633, 0.1237, 0.1165, 0.1474, 0.1236, 0.1229, 0.1115, 0.1118, 0.1469, 0.1288, 0.1308, 0.1974, 0.1615, 0.1371, 0.1376, 0.1473, 0.1114, 0.1322, 0.1018, 0.1383, 0.1306, 0.1641, 0.1636, 0.1391, 0.1241, 0.1123, 0.1295, 0.0744, 0.1226, 0.1244];
+    // V6.0 극강 가중치 배열 (최근 10회 60% + 최근 100회 30% + 전체 10%)
+    const WEIGHTS = [0.1728, 0.1056, 0.1249, 0.1691, 0.0424, 0.1154, 0.1187, 0.1778, 0.179, 0.043, 0.0464, 0.1795, 0.2395, 0.1579, 0.1907, 0.1246, 0.1099, 0.1073, 0.2388, 0.1098, 0.0495, 0.1648, 0.0449, 0.1755, 0.1714, 0.1124, 0.0777, 0.1837, 0.1746, 0.1148, 0.2417, 0.0447, 0.0531, 0.1619, 0.1782, 0.1123, 0.185, 0.1248, 0.0555, 0.11, 0.1652, 0.2317, 0.0943, 0.1693, 0.0502];
 
     function getBallClass(num) {
         if (num <= 10) return 'b-yellow';
@@ -70,36 +70,8 @@
         return 'b-green';
     }
 
-    // 번호 간격의 표준편차(수학적 분산도) 산출
-    function calculateGapStdDev(comb) {
-        let gaps = [];
-        for (let i = 0; i < comb.length - 1; i++) {
-            gaps.push(comb[i + 1] - comb[i]);
-        }
-        let mean = gaps.reduce((a, b) => a + b, 0) / gaps.length;
-        let variance = gaps.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / gaps.length;
-        return Math.sqrt(variance);
-    }
-
-    // 수학적 확률 분포 타입 분류
-    function getCombinationType(comb) {
-        let stdDev = calculateGapStdDev(comb);
-        let consecCount = 0;
-        for (let i = 0; i < comb.length - 1; i++) {
-            if (comb[i] + 1 === comb[i + 1]) consecCount++;
-        }
-
-        if (consecCount >= 2 || stdDev < 2.2 || stdDev > 9.0) {
-            return { type: 2, label: '강한 뭉침/비분산', css: 'tag-clump' };
-        } else if (consecCount === 1 || stdDev < 3.5 || stdDev > 7.5) {
-            return { type: 1, label: '약한 뭉침/집중', css: 'tag-mid' };
-        } else {
-            return { type: 0, label: '표준 분산형', css: 'tag-disp' };
-        }
-    }
-
-    // 엑셀 가중치 기반 6개 번호 추출 (가중 확률 룰렛 추출)
-    function weightedSample(poolSize = 26) {
+    // 최근 10회 출현율 기반 번호 룰렛 추출
+    function weightedSample(poolSize = 22) {
         let items = [];
         for (let i = 1; i <= 45; i++) {
             items.push({ num: i, weight: WEIGHTS[i - 1] });
@@ -135,32 +107,36 @@
 
         btn.disabled = true;
         btn.style.opacity = '0.6';
-        status.innerText = '🔄 최근 100회 가중치(80%) + 수학적 분포 패턴 연동 중...';
+        status.innerText = '🔄 최근 10회 트렌드(60%) 및 빈도수 정밀 분석 중...';
         container.innerHTML = '';
 
         setTimeout(() => {
-            let targetTypes = [0, 0, 0, 1, 2]; // 표준분산 3개, 약한 뭉침 1개, 강한 뭉침 1개
+            let tags = [
+                { label: '🔥 핫트렌드 집중형', css: 'tag-hot' },
+                { label: '🔥 핫트렌드 집중형', css: 'tag-hot' },
+                { label: '⚖️ 트렌드 밸런스형', css: 'tag-balance' },
+                { label: '⚖️ 트렌드 밸런스형', css: 'tag-balance' },
+                { label: '🧊 미출현 보완형', css: 'tag-cold' }
+            ];
+
             let finalGames = [];
 
-            for (let t = 0; t < targetTypes.length; t++) {
-                let wantedType = targetTypes[t];
+            for (let t = 0; t < 5; t++) {
+                let poolSize = (t < 2) ? 18 : (t < 4 ? 25 : 35);
                 let found = false;
                 let attempts = 0;
 
-                while (!found && attempts < 5000) {
+                while (!found && attempts < 3000) {
                     attempts++;
-                    let comb = weightedSample(26);
+                    let comb = weightedSample(poolSize);
                     let sum = comb.reduce((a, b) => a + b, 0);
 
-                    // 최근 100회 실제 당첨번호 총합 범위 필터링 (90 ~ 170)
-                    if (sum >= 90 && sum <= 170) {
-                        let typeInfo = getCombinationType(comb);
-                        if (typeInfo.type === wantedType) {
-                            let key = comb.join(',');
-                            if (!finalGames.some(g => g.comb.join(',') === key)) {
-                                finalGames.push({ comb: comb, info: typeInfo });
-                                found = true;
-                            }
+                    // 최근 10회 당첨번호 평균 총합 구간 반영 (100 ~ 165)
+                    if (sum >= 100 && sum <= 165) {
+                        let key = comb.join(',');
+                        if (!finalGames.some(g => g.comb.join(',') === key)) {
+                            finalGames.push({ comb: comb, tag: tags[t] });
+                            found = true;
                         }
                     }
                 }
@@ -172,7 +148,7 @@
                     <div class="game-card">
                         <div class="game-info">
                             <div class="game-title">GAME ${idx + 1}</div>
-                            <div><span class="type-tag ${item.info.css}">${item.info.label}</span></div>
+                            <div><span class="type-tag ${item.tag.css}">${item.tag.label}</span></div>
                         </div>
                         <div class="balls">
                             ${item.comb.map(n => `<div class="ball ${getBallClass(n)}">${n < 10 ? '0' + n : n}</div>`).join('')}
@@ -182,7 +158,7 @@
                 container.innerHTML += html;
             });
 
-            status.innerText = '✅ 최근 100회 가중치 80% 반영 5개 조합 도출 완료!';
+            status.innerText = '✅ 최근 10회 극강 가중치 60% 반영 5조합 도출 완료!';
             btn.disabled = false;
             btn.style.opacity = '1';
         }, 400);
